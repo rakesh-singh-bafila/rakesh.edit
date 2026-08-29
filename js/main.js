@@ -4,6 +4,66 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  /* 0. PRELOADER SCREEN & INITIAL VIDEOS LOADING CONTROLLER */
+  const preloader = document.getElementById('preloader');
+  const loaderBar = document.getElementById('loader-bar');
+  const loaderStatus = document.getElementById('loader-status');
+
+  // Find the initial 3 visible cards' preview videos (under influencers tab)
+  const initialCards = Array.from(document.querySelectorAll('.reel-card')).slice(0, 3);
+  const initialVideos = initialCards.map(card => card.querySelector('.reel-video-preview')).filter(Boolean);
+  
+  let loadedCount = 0;
+  const totalToLoad = initialVideos.length;
+
+  function updateLoaderProgress() {
+    loadedCount++;
+    const percentage = Math.min((loadedCount / totalToLoad) * 100, 100);
+    if (loaderBar) loaderBar.style.width = `${percentage}%`;
+    if (loaderStatus) loaderStatus.textContent = `Loading Visuals (${loadedCount}/${totalToLoad})`;
+
+    if (loadedCount >= totalToLoad) {
+      hidePreloader();
+    }
+  }
+
+  function hidePreloader() {
+    if (preloader && !preloader.classList.contains('fade-out')) {
+      if (loaderBar) loaderBar.style.width = '100%';
+      if (loaderStatus) loaderStatus.textContent = 'Ready';
+      
+      setTimeout(() => {
+        preloader.classList.add('fade-out');
+        // Once preloader starts fading out, play all visible previews
+        playVisiblePreviews();
+      }, 300);
+    }
+  }
+
+  // Bind loading handlers to the initial 3 videos
+  if (totalToLoad > 0) {
+    initialVideos.forEach(video => {
+      // Set src from data-src immediately to begin download
+      if (video.getAttribute('data-src')) {
+        video.src = video.getAttribute('data-src');
+        video.load();
+      }
+
+      // Check state
+      if (video.readyState >= 2) {
+        updateLoaderProgress();
+      } else {
+        video.addEventListener('loadeddata', updateLoaderProgress);
+        video.addEventListener('error', updateLoaderProgress);
+      }
+    });
+  } else {
+    hidePreloader();
+  }
+
+  // Safety timer to prevent locking the screen on very slow connections
+  setTimeout(hidePreloader, 4000);
+
   /* 1. NAVBAR SCROLL EFFECT */
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
@@ -66,10 +126,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Play visible videos
     const visiblePreviews = document.querySelectorAll('.reel-card:not(.hidden) .reel-video-preview');
     visiblePreviews.forEach(video => {
+      // Lazy load: copy data-src to src if not loaded yet
+      if (!video.src && video.getAttribute('data-src')) {
+        video.src = video.getAttribute('data-src');
+        video.autoplay = true;
+        video.load();
+      }
+
       if (video.paused) {
-        video.play().catch(err => {
-          console.log("Autoplay preview play error handled:", err);
-        });
+        // If readyState is ready, play immediately; otherwise, let autoplay and canplay fallback handle it once loaded
+        if (video.readyState >= 2) {
+          video.play().catch(err => {
+            console.log("Autoplay preview play error handled:", err);
+          });
+        } else {
+          // Fallback listener in case browser autoplay doesn't trigger on source load
+          video.addEventListener('canplay', () => {
+            video.play().catch(e => console.log("Canplay autoplay preview error handled:", e));
+          }, { once: true });
+        }
       }
     });
 

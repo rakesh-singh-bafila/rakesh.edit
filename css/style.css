@@ -1039,6 +1039,81 @@ body {
   font-size: 0.9rem;
 }
 
+/* PRELOADER SCREEN */
+.preloader {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-primary);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s ease;
+}
+
+.preloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: logoFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.loader-logo .logo-dot {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-red));
+  border-radius: 50%;
+  box-shadow: 0 0 16px var(--accent-purple);
+}
+
+.loader-bar-container {
+  width: 180px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.loader-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-purple), var(--accent-red));
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 12px var(--accent-purple);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loader-status {
+  margin-top: 14px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@keyframes logoFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* RESPONSIVE DESIGN */
 @media (max-width: 992px) {
   .ps-grid {
