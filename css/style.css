@@ -1051,8 +1051,13 @@ body {
     display: none;
   }
   .badge-1, .badge-2, .badge-3, .badge-4 {
-    display: none;
+    scale: 0.85; /* Scale down slightly on tablet screens */
   }
+  .badge-1 { left: 4%; }
+  .badge-2 { right: 4%; }
+  .badge-3 { left: 6%; }
+  .badge-4 { right: 2%; }
+  
   .about-card {
     padding: 36px 24px;
   }
@@ -1061,6 +1066,33 @@ body {
 @media (max-width: 600px) {
   .container {
     padding: 0 12px;
+  }
+
+  /* Show and adjust floating badges on phone screens */
+  .floating-badge {
+    padding: 5px 10px;
+    font-size: 0.65rem;
+    scale: 0.65; /* Scale down on phones */
+  }
+  
+  .badge-1 {
+    top: -5%;
+    left: -2%;
+  }
+  
+  .badge-2 {
+    top: 32%;
+    right: -2%;
+  }
+  
+  .badge-3 {
+    bottom: -15%;
+    left: 2%;
+  }
+  
+  .badge-4 {
+    bottom: 22%;
+    right: -4%;
   }
 
   /* Reels grid with 3 columns, centered wrapping, no layout shifts */

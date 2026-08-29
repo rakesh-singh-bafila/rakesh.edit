@@ -57,7 +57,41 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       if (showAllContainer) showAllContainer.style.display = 'none';
     }
+
+    // Play visible and pause hidden previews
+    playVisiblePreviews();
   }
+
+  function playVisiblePreviews() {
+    // Play visible videos
+    const visiblePreviews = document.querySelectorAll('.reel-card:not(.hidden) .reel-video-preview');
+    visiblePreviews.forEach(video => {
+      if (video.paused) {
+        video.play().catch(err => {
+          console.log("Autoplay preview play error handled:", err);
+        });
+      }
+    });
+
+    // Pause hidden videos
+    const hiddenPreviews = document.querySelectorAll('.reel-card.hidden .reel-video-preview');
+    hiddenPreviews.forEach(video => {
+      if (!video.paused) {
+        video.pause();
+      }
+    });
+  }
+
+  // Interaction triggers to unlock autoplay on mobile/phone
+  const unlockAutoplay = () => {
+    playVisiblePreviews();
+    window.removeEventListener('scroll', unlockAutoplay);
+    window.removeEventListener('touchstart', unlockAutoplay);
+    document.removeEventListener('click', unlockAutoplay);
+  };
+  window.addEventListener('scroll', unlockAutoplay);
+  window.addEventListener('touchstart', unlockAutoplay);
+  document.addEventListener('click', unlockAutoplay);
 
   // Filter Tab Click Events
   filterBtns.forEach(btn => {
